@@ -1,0 +1,26 @@
+#!/usr/bin/python
+
+import sys
+import os
+import glob
+from collections import defaultdict
+import codecs
+
+infiles = glob.glob(os.path.join(sys.argv[1], '*.txt'))
+outfile = sys.argv[2]
+
+terms = set()
+docs = []
+
+with codecs.open(outfile, 'w', encoding='utf-8') as csv:
+    for f in infiles:
+        print f
+        dtm = defaultdict(lambda: 0)
+        with codecs.open(f, encoding='utf-8') as d:
+            doc = os.path.basename(f)
+            for t in d:
+                term = t.strip('\n')
+                dtm[term] = dtm[term]+1
+        
+            for lemma,freq in dtm.iteritems():
+                csv.write(u','.join([doc, lemma, str(freq), '\n']))

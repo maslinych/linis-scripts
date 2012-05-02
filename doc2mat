@@ -1,0 +1,35 @@
+#!/usr/bin/python
+
+import sys
+import os
+import glob
+from collections import defaultdict
+import codecs
+
+infiles = glob.glob(os.path.join(sys.argv[1], '*.txt'))
+outfile = sys.argv[2]
+
+terms = set()
+docs = []
+dtm = defaultdict(lambda: 0)
+
+for f in infiles:
+    print f
+    with codecs.open(f, encoding='utf-8') as d:
+        doc = os.path.basename(f)
+        docs.append(doc)
+        for t in d:
+            term = t.strip('\n')
+            terms.add(term)
+            dtm[(doc, term)] = dtm[(doc,t)]+1
+
+tlist = list(terms)
+
+with codecs.open(outfile, 'w', encoding='utf-8') as csv:
+    csv.write(u",".join([','] + [t for t in tlist]))
+    csv.write('\n')
+
+    for doc in docs:
+        csv.write(u','.join([doc] + [dtm[(doc, term)] for term in tlist]))
+        csv.write('\n')
+
