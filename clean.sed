@@ -11,7 +11,7 @@ s/:-\?(\+/ SMILEU /g
 s/((\+/ SMILEUU /g
 s,<[a-z]\+[^<>абвгдеёжзийклмнопростуфхцчшщьыъэюя]*>, ,gi
 s,<[^<>]*/[^<>]*>, ,gi
-s,\(http://[^ ]\+\),HREF\1 ,gi
-s,\(www\.[^ ]\+\),HREFhttp\1 ,gi
+s,\( http://[^ ]\+\), HREF\1 ,gi
+s,\( www\.[^ ]\+\), HREFhttp\1 ,gi
 :a 
 /\(HREF\|IMG\)[a-z0-9]\+[^ a-z0-9]/{s/\(\(HREF\|IMG\)[a-z0-9]\+\)[^a-z0-9]/\1/g;ba}
