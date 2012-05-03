@@ -1,0 +1,17 @@
+SCRIPTS="$$HOME/lab/linis/scripts"
+
+.PRECIOUS: clean.txt
+
+source.txt: txt
+	$(SCRIPTS)/txtdir2csv.sh $< $@
+
+clean.txt: source.txt
+	$(SCRIPTS)/clean.sed $< | hxunent > $@
+
+lemmatized.txt: clean.txt
+	mystem -lcf -e utf-8 $< | $(SCRIPTS)/demystem.py > $@
+
+lemmatized.csv: lemmatized.txt
+	sed -e 's/[^[:alnum:][:space:]]//g' -e 's/^............/&,/'
+
+all: lemmatized.txt
