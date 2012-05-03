@@ -2,6 +2,8 @@ SCRIPTS="$$HOME/lab/linis/scripts"
 
 .PRECIOUS: clean.txt
 
+all: lemmatized.csv
+
 source.txt: txt
 	$(SCRIPTS)/txtdir2csv.sh $< $@
 
@@ -12,6 +14,7 @@ lemmatized.txt: clean.txt
 	mystem -lcf -e utf-8 $< | $(SCRIPTS)/demystem.py > $@
 
 lemmatized.csv: lemmatized.txt
-	sed -e 's/[^[:alnum:][:space:]]//g' -e 's/^............/&,/'
+	sed -e 's/[^-[:alnum:][:space:]]//g' -e 's/^............/&,/' $< > $@
 
-all: lemmatized.txt
+check: lemmatized.csv
+	awk -F, 'BEGIN{p=0} {if (!($1==p+1)) {print p}; p=$1; next} ' lemmatized.csv 

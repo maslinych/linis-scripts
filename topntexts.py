@@ -2,12 +2,14 @@
 import os
 import sys
 import codecs
+import textwrap
 from collections import defaultdict
 
-# synopsis: <csv> <summary> <texts dir> <n> <outfile>
+# synopsis: <csv> <summary> <texts> <n> <outfile>
 
 dtd = defaultdict(list)
 topics = None
+texts = {}
 
 with codecs.open(sys.argv[1], encoding='utf-8') as csv:
     for line in csv:
@@ -23,15 +25,21 @@ for topic,values in dtd.items():
 with codecs.open(sys.argv[2], 'rb', encoding='utf-8') as txt:
     summaries = txt.read().strip('\n').split('\n\n\n')
 
-#with codecs.open
-for topic,values in dtd.items():
-    print "\n\n"
-    print "###################################################################################################"
-    print summaries[topic]
-    for text in values[:int(sys.argv[4])]:
-        print "\n"
-        print '===', text[1], text[0], '==='
-        with codecs.open(os.path.join(sys.argv[3], text[1]), 'rb', encoding='utf-8') as tf:
-            print tf.read()
-            
+with codecs.open(sys.argv[3], 'rb', encoding='utf-8') as clean:
+    for line in clean:
+        texts[line[:12]] = line[13:]
+
+with codecs.open(sys.argv[5], 'wb', encoding='utf-8') as out:
+    for topic,values in dtd.items():
+        out.write("###################################################################################################\n")
+        out.write(summaries[topic] + "\n")
+        for text in values[:int(sys.argv[4])]:
+            out.write("\n\n")
+            out.write(u'=== {0}, {1} ==='.format(text[1], text[0]))
+            try:
+                out.write(textwrap.wrap(texts[text[1]]))
+            except (KeyError):
+                out.write('!!TEXT NOT FOUND!!')
+        out.write("\n\n")
+                
 
