@@ -17,4 +17,7 @@ lemmatized.csv: lemmatized.txt
 	sed -e 's/[^-[:alnum:][:space:]]//g' -e 's/^............/&,/' $< > $@
 
 check: lemmatized.csv
-	awk -F, 'BEGIN{p=0} {if (!($$1==p+1)) {print p}; p=$$1; next} ' lemmatized.csv 
+	awk -F, 'BEGIN{p=0} {if (!($$1==p+1)) {print p}; p=$$1; next} ' $<
+
+term-pos.txt: term-index.txt
+	mystem -e utf-8 -lic $< | sed 's/^{[^=}]\+[=?]\([^=,]*\)[^}]*}/\1/' > $@
