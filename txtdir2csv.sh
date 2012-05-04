@@ -16,7 +16,7 @@ trap 'rm -f "$tempfile"' EXIT
 pushd "$txtdir"
 for t in *.txt
 do
-    echo "${t%%.txt},$(cat "$t" | tr '\n' ' ')" >> "$tempfile"
+    echo "${t%%.txt},$(cat "$t" | hxunent | tr '\n' ' ')" >> "$tempfile"
 done 
 popd
 
