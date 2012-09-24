@@ -1,5 +1,5 @@
 SCRIPTS="$$HOME/lab/linis/scripts"
-TMT="java -jar $$HOME/local/tmt-0.4.0.jar"
+TMT=java -jar $$HOME/local/tmt-0.4.0.jar
 
 .PRECIOUS: clean.txt
 
