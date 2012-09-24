@@ -25,7 +25,7 @@ val tokenizer = {
 
 val text = {
   source ~>                              // read from the source file
-  Column(3) ~>                           // select column containing text
+  Column(2) ~>                           // select column containing text
   TokenizeWith(tokenizer) ~>             // tokenize with tokenizer above
   TermCounter() ~>                       // collect counts (needed below)
   TermMinimumDocumentCountFilter(5) ~>   // filter terms in <4 docs
