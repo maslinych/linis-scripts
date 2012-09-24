@@ -5,6 +5,8 @@ TMT="java -jar $$HOME/local/tmt-0.4.0.jar"
 
 all: lemmatized.csv
 
+default-lda: lda100/document-topic-distributions.csv
+
 source.txt: txt
 	$(SCRIPTS)/txtdir2csv.sh $< $@
 
@@ -23,5 +25,5 @@ check: lemmatized.csv
 term-pos.txt: term-index.txt
 	mystem -e utf-8 -lic $< | sed 's/^{[^=}]\+[=?]\([^=,]*\)[^}]*}/\1/' > $@
 
-lda100/document-topic-distributions.csv: config100.scala lemmatized.csv 
+lda%/document-topic-distributions.csv: config%.scala lemmatized.csv 
 	$(TMT) $<
