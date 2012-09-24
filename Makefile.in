@@ -1,4 +1,5 @@
 SCRIPTS="$$HOME/lab/linis/scripts"
+TMT="java -jar $$HOME/local/tmt-0.4.0.jar"
 
 .PRECIOUS: clean.txt
 
@@ -21,3 +22,6 @@ check: lemmatized.csv
 
 term-pos.txt: term-index.txt
 	mystem -e utf-8 -lic $< | sed 's/^{[^=}]\+[=?]\([^=,]*\)[^}]*}/\1/' > $@
+
+lda100/document-topic-distributions.csv: config100.scala lemmatized.csv 
+	$(TMT) $<
