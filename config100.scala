@@ -13,6 +13,12 @@ import edu.stanford.nlp.tmt.model.SymmetricDirichletParams;
 import edu.stanford.nlp.tmt.model.lda._;
 import edu.stanford.nlp.tmt.model.llda._;
 
+import java.io.File;
+import edu.stanford.nlp.tmt.learn._;
+import edu.stanford.nlp.tmt.model._;
+
+
+
 val source = CSVFile("lemmatized.csv") ~> IDColumn(1);
 
 val tokenizer = {
@@ -51,5 +57,18 @@ val modelPath = file("lda100");
 //TrainCVB0LDA(params, dataset, output=modelPath, maxIterations=1000);
 
 // To use the Gibbs sampler for inference, instead use
-TrainGibbsLDA(params, dataset, output=modelPath, maxIterations=1500);
+//TrainGibbsLDA(params, dataset, output=modelPath, maxIterations=1500);
+
+  def ResumableTrainGibbsLDA(modelParams : LDAModelParams, dataset : Iterable[LDADocumentParams], output : File, maxIterations : Int = 1500) : GibbsLDA = {
+    val modeler = SerialModeler(GibbsLDA);
+    modeler.train(modelParams, dataset, output, saveDataState = true, maxIterations = maxIterations);
+    if (output != null) {
+      val table : Iterable[(String,Array[Double])] =
+        modeler.data.view.map(doc => (doc.id,doc.signature));
+      CSVFile(output, "document-topic-distributions.csv").write(table);
+    }   
+    modeler.model.get;
+  }
+
+ResumableTrainGibbsLDA(params, dataset, output=modelPath, maxIterations=1500);
 
