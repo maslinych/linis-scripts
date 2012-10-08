@@ -5,7 +5,7 @@ TMT=java -jar $$HOME/local/tmt-0.4.0.jar
 
 all: lemmatized.csv
 
-lda-default: lda100/document-topic-distributions.csv
+lda-default: lda100/document-topic-distributions.csv lda100/top20.txt
 
 source.txt: txt
 	$(SCRIPTS)/txtdir2csv.sh $< $@
@@ -28,6 +28,9 @@ term-pos.txt: term-index.txt
 lda%/document-topic-distributions.csv: config%.scala lemmatized.csv 
 	time $(TMT) $<
 
+lda%/top20.txt: lda%/document-topic-distributions.csv lda%/01500/summary.txt clean.txt 
+	python $(SCRIPTS)/topntexts.py $^ 20 lda$*/$@
+
 dist-lda:
-	zip -r lda-$(shell basename `realpath .`).zip lda*/{description.txt,document-topic-distributions.csv} \
+	zip -r lda-$(shell basename `realpath .`).zip lda*/{description.txt,document-topic-distributions.csv,top20.txt} \
 	$(shell  for i in lda* ; do find $$i -type d  | sort | tail -1 ; done)/*
