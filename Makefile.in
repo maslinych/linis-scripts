@@ -32,5 +32,8 @@ lda%/top20.txt: lda%/document-topic-distributions.csv lda%/01500/summary.txt cle
 	python $(SCRIPTS)/topntexts.py $^ 20 lda$*/$@
 
 dist-lda:
-	zip -r lda-$(shell basename `realpath .`).zip lda*/{description.txt,document-topic-distributions.csv,top20.txt} \
+	zip -r lda-$(shell basename `realpath .`)-lda.zip lda*/{description.txt,document-topic-distributions.csv,top20.txt} \
 	$(shell  for i in lda* ; do find $$i -type d  | sort | tail -1 ; done)/*
+
+dist-data:
+	zip -r lda-$(shell basename `realpath .`)-data.zip clean.txt lemmatized.csv
