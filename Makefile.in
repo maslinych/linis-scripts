@@ -5,7 +5,7 @@ TMT=java -jar $$HOME/local/tmt-0.4.0.jar
 
 all: lemmatized.csv
 
-lda-default: lda100/document-topic-distributions.csv lda100/top20.txt
+lda-default: lda100/document-topic-distributions.csv lda100/top50.txt lda100/topic-term-distributions.csv
 
 source.txt: txt
 	$(SCRIPTS)/txtdir2csv.sh $< $@
@@ -28,12 +28,15 @@ term-pos.txt: term-index.txt
 lda%/document-topic-distributions.csv: config%.scala lemmatized.csv 
 	time $(TMT) $<
 
-lda%/top20.txt: lda%/document-topic-distributions.csv lda%/01500/summary.txt clean.txt 
-	python $(SCRIPTS)/topntexts.py $^ 20 lda$*/$@
+lda%/topic-term-distributions.csv: lda%/01500/topic-term-distributions.csv.gz lda%/01500/term-index.txt
+	zcat $< | awk -f $(SCRIPTS)/transpose.awk | paste -d, lda$*/01500/term-index.txt - | tr ' ' ',' > $@
+
+lda%/top50.txt: lda%/document-topic-distributions.csv lda%/01500/summary.txt clean.txt 
+	python $(SCRIPTS)/topntexts.py $^ 50 $@
 
 dist-lda:
-	zip -r lda-$(shell basename `realpath .`)-lda.zip lda*/{description.txt,document-topic-distributions.csv,top20.txt} \
-	$(shell  for i in lda* ; do find $$i -type d  | sort | tail -1 ; done)/*
+	zip -r lda-$(shell basename `realpath .`).zip lda*/{description.txt,document-topic-distributions.csv,top50.txt,topic-term-distributions.csv} 
+#	$(shell  for i in lda* ; do find $$i -type d  | sort | tail -1 ; done)/topic-term-distributions.csv
 
 dist-data:
 	zip -r lda-$(shell basename `realpath .`)-data.zip clean.txt lemmatized.csv
