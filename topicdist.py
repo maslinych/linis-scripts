@@ -30,6 +30,13 @@ class Topic(object):
     def append(self, weight, word):
         self._tuples.append((weight, word))
 
+    def filter(self, threshold=0):
+        if threshold > 0:
+            self.sort()
+            return [t for w,t in self._tuples if w > threshold]
+        else:
+            return self.words
+
 class TopicArray(object):
     def __init__(self):
         self.topics = {}
@@ -51,8 +58,8 @@ class TopicArray(object):
         names.sort()
         for nn, aname in enumerate(names):
             for bname in names[nn+1:]:
-                for an, akey in enumerate(self.keysorder[aname]):
-                    for bkey in self.keysorder[bname][an+1:]:
+                for akey in self.keysorder[aname]:
+                    for bkey in self.keysorder[bname]:
                         yield (self.getid(aname, akey), self.topics[aname][akey]), (self.getid(bname, bkey), self.topics[bname][bkey])
 
 
@@ -71,7 +78,7 @@ def run_rbo(atopic, btopic, pvalue):
     return calc_rbo(atopic.words, btopic.words, pvalue)
     print ','.join([unicode(s) for s in [calc_rbo(awords, bwords, pvalue), a_id, b_id]])
 
-def run_bow(atopic, btopic, parameter=None):
+def run_bow(atopic, btopic, parameter=0):
     aset = set(atopic.words)
     bset = set(btopic.words)
     return len(aset.intersection(bset))/float(len(aset.union(bset)))
@@ -86,6 +93,7 @@ def run_distance_function(function, topics, parameter, onlybest=False):
     maxdist = 0
     current = None
     besttopic = None
+    bestdict = {}
     for (a_id, atopic), (b_id, btopic) in topics.iterpairs():
         distance = DISTANCE_FUNCTIONS[function](atopic, btopic, parameter)
         if onlybest:
